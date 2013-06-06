@@ -1,0 +1,5 @@
+hbase_address=IntelIDH-01,IntelIDH-06,IntelIDH-07:2181:/hbase
+table=Test_Aggregate
+hbase.rpc.timeout=120000
+KEY=family:mod10Str
+SELECT=rowcount#family:longStr2

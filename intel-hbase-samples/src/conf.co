@@ -1,0 +1,8 @@
+hbase_address=IntelIDH-01,IntelIDH-06,IntelIDH-07:2181:/hbase
+table=Test_Aggregate
+action=max
+columns=family:longStr2
+interpreter=LongStr
+delim=,
+index=1
+hbase.rpc.timeout=120000

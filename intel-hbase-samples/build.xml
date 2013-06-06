@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="HBaseSampleCaseTest">
+	<property environment="env" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	<path id="test.classpath">
+		<pathelement location="conf" />
+		<pathelement location="bin" />
+		<fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+	</path>
+	<path id="run.classpath">
+		<pathelement location="conf" />
+		<path refid="test.classpath" />
+	</path>
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall" />
+	<target depends="clean,build-project" name="build" />
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="test.classpath" />
+		</javac>
+	</target>
+	<target depends="build" name="Aggregate">
+		<java classname="com.intel.hbase.test.aggregate.AggregateTest" failonerror="true" fork="yes">
+			<classpath refid="test.classpath" />
+			<arg line="-dir src -concurrent false" />
+		</java>
+	</target>
+	<target depends="build" name="GroupBy">
+		<java classname="com.intel.hbase.test.groupby.GroupByTest" failonerror="true" fork="yes">
+			<classpath refid="test.classpath" />
+			<arg line="-dir src -concurrent false" />
+		</java>
+	</target>
+	<target depends="build" name="BuildTable">
+		<java classname="com.intel.hbase.test.createtable.TableBuilder" failonerror="true" fork="yes">
+			<classpath refid="run.classpath" />
+			<arg line="4 false" />
+		</java>
+	</target>
+	<target depends="build" name="BuildTableWithPartition">
+		<java classname="com.intel.hbase.test.createtable.TableBuilder" failonerror="true" fork="yes">
+			<classpath refid="run.classpath" />
+			<arg line="4 true" />
+		</java>
+	</target>
+	<target depends="build" name="NormalScan" >
+		<java classname="com.intel.hbase.test.parallelscanner.ParallelScannerTest" failonerror="true" fork="yes">
+			<classpath refid="test.classpath"/>
+			<arg line="Test_Aggregate 0000,c01 9999,c01 false family mod10Str 10"/>
+		</java>
+	</target>
+	<target depends="build" name="ParallelScan" >
+		<java classname="com.intel.hbase.test.parallelscanner.ParallelScannerTest" failonerror="true" fork="yes">
+			<classpath refid="test.classpath"/>
+			<arg line="Test_Aggregate 0000,c01 9999,c01 true family mod10Str 10"/>
+		</java>
+	</target>
+	<target depends="build" name="ExpressionFilter">
+		<java classname="com.intel.hbase.test.expressionfilter.ExpressionFilterTest" failonerror="true" fork="yes">
+			<classpath refid="test.classpath" />
+			<arg line="Test_Aggregate 0000,c01" />
+		</java>
+	</target>
+	<target depends="build" name="MultiRowRangeFilter">
+		<java classname="com.intel.hbase.test.multirowrangefilter.MultiRowRangeFilterTest" failonerror="true" fork="yes">
+			<classpath refid="test.classpath" />
+			<arg line="Test_Aggregate" />
+		</java>
+	</target>
+	<target depends="build" name="CreateTable">
+			<java classname="com.intel.hbase.test.fulltextindex.CreateTable" failonerror="true" fork="yes">
+				<classpath refid="test.classpath" />
+				<arg line="Test_fullTextIndex" />
+			</java>
+	</target>
+	<target depends="build" name="Search">
+			<java classname="com.intel.hbase.test.fulltextindex.Search" failonerror="true" fork="yes">
+				<classpath refid="test.classpath" />
+				<arg line="Test_fullTextIndex" />
+			</java>
+	</target>
+	<target depends="build" name="TestCreateTable">
+	        <java classname="com.intel.hbase.table.create.TestCreateTable" failonerror="true" fork="yes">
+	            <classpath refid="run.classpath"/>
+	            <arg line="${partition}"/>
+	        </java>
+	</target>
+	<target depends="build" name="TestTableReplication">
+	        <java classname="com.intel.hbase.table.replication.TestReplication" failonerror="true" fork="yes">
+	  			<classpath refid="run.classpath"/>
+	        </java>
+	</target>
+</project>
